@@ -12,6 +12,8 @@ ReactGA.initialize('UA-117744002-1', {
     'userId' : "1234User",
     debug: true
 }); //Unique Google Analytics tracking number
+ReactGA.pageview(window.location.pathname + window.location.search);
+
 
 ReactDOM.render(<App/>, document.getElementById('root'));
 ReactDOM.render(<ShowBooks/>, document.getElementById('showBooks'))

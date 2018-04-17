@@ -18,7 +18,6 @@ class ShowBooks extends Component {
 
     componentDidMount() {
         this.getBooks();
-        ReactGA.pageview(window.location.pathname + window.location.search);
     }
 
     getBooks() {
@@ -30,7 +29,7 @@ class ShowBooks extends Component {
             }
         }
 
-        console.time('getBooks');
+        var t = performance.now();
         fetch('http://localhost:3001/books', options)
             .then(function (response) {
                 return response.json();
@@ -51,7 +50,7 @@ class ShowBooks extends Component {
                 ReactGA.timing({
                     category: 'Books',
                     variable: 'fetch all',
-                    value: console.timeEnd("getBooks")
+                    value: performance.now() - t
                 });
                 ReactGA.event({
                     category: 'Books',
@@ -111,24 +110,25 @@ class ShowBooks extends Component {
             },
             body: body
         }
-        console.time("postBook");
+        var t = performance.now();
         fetch('https://books-rest-example.herokuapp.com/books', options)
             .then(response => {
                 console.log(response, 'Book added!');
                 ReactGA.set({userId: 123});
+                ReactGA.timing({
+                    category: 'Books',
+                    variable: 'Add one',
+                    value: performance.now() - t
+
+                });
                 ReactGA.event({
                     category: 'Books',
                     action: 'Added one',
                 });
+
                 this.getBooks();
             });
 
-        ReactGA.timing({
-            category: 'Books',
-            variable: 'fetch all',
-            value: console.timeEnd("postBook")
-
-        });
     }
 
     clearBooks = event => {
@@ -144,13 +144,13 @@ class ShowBooks extends Component {
             }
         }
 
-        console.time('deleteBooks');
+        var t = performance.now();
         fetch('https://books-rest-example.herokuapp.com/books', options)
             .then(response => {
                 ReactGA.timing({
                     category: 'Books',
-                    variable: 'fetch all',
-                    value: console.timeEnd("deleteBooks")
+                    variable: 'Clear all',
+                    value:  performance.now() - t
                 })
                 ReactGA.event({
                     category: 'Books',
