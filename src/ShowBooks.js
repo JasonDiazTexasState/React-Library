@@ -57,7 +57,6 @@ class ShowBooks extends Component {
                     category: 'Books',
                     action: 'Fetched all'
                 });
-                ReactGA.ga()
                 this.setState({
                     books,
                     author: "",
