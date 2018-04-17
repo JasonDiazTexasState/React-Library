@@ -30,7 +30,7 @@ class ShowBooks extends Component {
         }
 
         var t = performance.now();
-        fetch('http://localhost:3001/books', options)
+        fetch('https://books-rest-example.herokuapp.com/books', options)
             .then(function (response) {
                 return response.json();
             })
