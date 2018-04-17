@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import ReactGA from 'react-ga';
 
 
 class ShowBooks extends Component {
@@ -17,9 +18,10 @@ class ShowBooks extends Component {
 
     componentDidMount() {
         this.getBooks();
+        ReactGA.pageview(window.location.pathname + window.location.search);
     }
 
-    getBooks (){
+    getBooks() {
         var options = {
             mode: 'cors',
             headers: {
@@ -28,34 +30,49 @@ class ShowBooks extends Component {
             }
         }
 
+        console.time('getBooks');
         fetch('http://localhost:3001/books', options)
-        .then(function (response) {
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
-            const books = data.map((book) => {
-                return (
-                    <div key={book.results}>
-                        <h3 className="h3author">{book.author}</h3>
-                        <h3 className="h3title">{book.title}</h3>
-                        <h3 className="h3pages">{book.pages}</h3>
-                        <hr/>
-                    </div>
-                )
-
+            .then(function (response) {
+                return response.json();
             })
-            this.setState({
-                books,
-                author: "",
-                title: "",
-                pages: ""
-            });
-        })
-        .catch(error => {
-                console.log("Error: " + error);
-            }
-        );
+            .then(data => {
+                console.log(data);
+                const books = data.map((book) => {
+                    return (
+                        <div key={book._id}>
+                            <h3 key={book._id + "author"} className="h3author">{book.author}</h3>
+                            <h3 key={book._id + "title"} className="h3title">{book.title}</h3>
+                            <h3 key={book._id + "pages"} className="h3pages">{book.pages}</h3>
+                            <hr/>
+                        </div>
+                    )
+
+                });
+                ReactGA.timing({
+                    category: 'Books',
+                    variable: 'fetch all',
+                    value: console.timeEnd("getBooks")
+                });
+                ReactGA.event({
+                    category: 'Books',
+                    action: 'Fetched all'
+                });
+                ReactGA.ga()
+                this.setState({
+                    books,
+                    author: "",
+                    title: "",
+                    pages: ""
+                });
+            })
+            .catch(error => {
+                    console.log("Error: " + error);
+                    ReactGA.exception({
+                        description: 'An error ocurred',
+                        fatal: false
+                    });
+                }
+            );
     }
 
 
@@ -79,8 +96,6 @@ class ShowBooks extends Component {
             title: event.target.value,
             pages: event.target.value
         });
-        var that = this;
-        //  var books = this.state.books;
 
         var body = JSON.stringify({
             author: this.state.author,
@@ -97,12 +112,24 @@ class ShowBooks extends Component {
             },
             body: body
         }
-
+        console.time("postBook");
         fetch('https://books-rest-example.herokuapp.com/books', options)
             .then(response => {
                 console.log(response, 'Book added!');
+                ReactGA.set({userId: 123});
+                ReactGA.event({
+                    category: 'Books',
+                    action: 'Added one',
+                });
                 this.getBooks();
             });
+
+        ReactGA.timing({
+            category: 'Books',
+            variable: 'fetch all',
+            value: console.timeEnd("postBook")
+
+        });
     }
 
     clearBooks = event => {
@@ -118,12 +145,26 @@ class ShowBooks extends Component {
             }
         }
 
+        console.time('deleteBooks');
         fetch('https://books-rest-example.herokuapp.com/books', options)
             .then(response => {
+                ReactGA.timing({
+                    category: 'Books',
+                    variable: 'fetch all',
+                    value: console.timeEnd("deleteBooks")
+                })
+                ReactGA.event({
+                    category: 'Books',
+                    action: 'Cleared all',
+                });
                 console.log(response, 'Books cleared!');
             })
             .catch(err => {
                 console.log(err, 'Books not cleared, try again');
+                ReactGA.exception({
+                    description: 'An error ocurred',
+                    fatal: false
+                });
             });
 
         this.setState({
