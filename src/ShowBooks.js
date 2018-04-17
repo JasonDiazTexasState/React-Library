@@ -98,7 +98,7 @@ class ShowBooks extends Component {
             body: body
         }
 
-        fetch('http://localhost:3001/books', options)//https://fast-earth-23205.herokuapp.com/books', options)
+        fetch('https://books-rest-example.herokuapp.com/books', options)
             .then(response => {
                 console.log(response, 'Book added!');
                 this.getBooks();
@@ -118,7 +118,7 @@ class ShowBooks extends Component {
             }
         }
 
-        fetch('http://localhost:3001/books', options)//https://fast-earth-23205.herokuapp.com/books', options)
+        fetch('https://books-rest-example.herokuapp.com/books', options)
             .then(response => {
                 console.log(response, 'Books cleared!');
             })
